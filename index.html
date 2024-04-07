@@ -13,32 +13,21 @@
     <script>
         function fetchObjectDetails() {
             var objectId = document.getElementById('objectId').value;
-            var xhr = new XMLHttpRequest();
-            
-            // Hier muss die URL der Azure Function eingefügt werden.
-            xhr.open("GET", "https://<deine-function-app>.azurewebsites.net/api/GetObjectById?id=" + objectId, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            // Wenn ein API-Schlüssel benötigt wird, füge die folgende Zeile hinzu:
-            // xhr.setRequestHeader('x-functions-key', '<dein-function-key>');
-            
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    // Anzeige der Antwort
-                    document.getElementById('objectDetails').textContent = xhr.responseText;
-                } else {
-                    // Fehlerbehandlung
-                    document.getElementById('objectDetails').textContent = 
-                        "Fehler beim Abrufen der Details: " + xhr.statusText;
-                }
-            };
-
-            xhr.onerror = function() {
-                // Netzwerkfehler behandeln
-                document.getElementById('objectDetails').textContent = "Netzwerkfehler";
-            };
-
-            xhr.send();
+            fetch(`/api/GetObjectById?id=${objectId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Netzwerkantwort war nicht ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('objectDetails').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('objectDetails').textContent = error.toString();
+                });
         }
     </script>
 </body>
 </html>
+
