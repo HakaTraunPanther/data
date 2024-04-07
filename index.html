@@ -1,13 +1,31 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Darstellungswebsite</title>
+<meta charset="UTF-8">
+<title>Dog Facts</title>
+<script>
+function fetchDogFacts() {
+  // Hole die Anzahl der gewünschten Fakten aus dem Eingabefeld
+  var numberOfFacts = document.getElementById('facts-number').value;
+
+  // Führe die API-Anfrage aus
+  fetch('http://dog-api.kinduff.com/api/facts?number=' + numberOfFacts)
+    .then(response => response.json())
+    .then(data => {
+      // Zeige die Fakten im Anzeigebereich an
+      document.getElementById('facts-display').innerText = data.facts.join('\n\n');
+    })
+    .catch(error => console.error('Fehler beim Abrufen der Dog Facts:', error));
+}
+</script>
 </head>
 <body>
-    <h1>Gespeicherte Daten anzeigen</h1>
-    <div id="data-container"></div>
-
-    <script src="script.js"></script>
+<h1>Dog Facts API</h1>
+<label for="facts-number">Anzahl der Fakten:</label>
+<input type="number" id="facts-number" value="5">
+<button onclick="fetchDogFacts()">Fakten abrufen</button>
+<h2>Abgerufene Fakten:</h2>
+<pre id="facts-display"></pre>
 </body>
 </html>
+
