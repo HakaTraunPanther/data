@@ -1,34 +1,44 @@
-const axios = require('axios');
-module.exports = async function (context, req) {
-    // Die ID wird aus der Query-Parameter oder dem Request-Body gelesen.
-    const id = (req.query.id || (req.body && req.body.id));
-    
-    // Prüfen, ob die ID vorhanden ist
-    if (!id) {
-        context.res = {
-            status: 400,
-            body: "Bitte eine gültige ID angeben."
-        };
-        return;
-    }
-    // Die URL der externen API, angepasst mit der ID aus dem Request
-    const apiUrl = `https://api.restful-api.dev/objects/${id}`;
-    try {
-        // Abfrage der externen API
-        const response = await axios.get(apiUrl);
-        // Rückgabe des Ergebnisses als HTTP-Antwort
-        context.res = {
-            status: 200, // OK
-            body: response.data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
-    } catch (error) {
-        // Fehlerbehandlung
-        context.res = {
-            status: error.response ? error.response.status : 500,
-            body: error.message
-        };
-    }
-};
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Objekt Details</title>
+</head>
+<body>
+    <h1>Objektdetails aus API</h1>
+    <input type="text" id="objectId" placeholder="Objekt-ID eingeben">
+    <button onclick="fetchObjectDetails()">Details abrufen</button>
+    <pre id="objectDetails"></pre>
+
+    <script>
+        function fetchObjectDetails() {
+            var objectId = document.getElementById('objectId').value;
+            var xhr = new XMLHttpRequest();
+            
+            // Hier muss die URL der Azure Function eingefügt werden.
+            xhr.open("GET", "https://<deine-function-app>.azurewebsites.net/api/GetObjectById?id=" + objectId, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            // Wenn ein API-Schlüssel benötigt wird, füge die folgende Zeile hinzu:
+            // xhr.setRequestHeader('x-functions-key', '<dein-function-key>');
+            
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Anzeige der Antwort
+                    document.getElementById('objectDetails').textContent = xhr.responseText;
+                } else {
+                    // Fehlerbehandlung
+                    document.getElementById('objectDetails').textContent = 
+                        "Fehler beim Abrufen der Details: " + xhr.statusText;
+                }
+            };
+
+            xhr.onerror = function() {
+                // Netzwerkfehler behandeln
+                document.getElementById('objectDetails').textContent = "Netzwerkfehler";
+            };
+
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
