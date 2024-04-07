@@ -16,7 +16,8 @@
             fetch(`/api/GetObjectById?id=${objectId}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Netzwerkantwort war nicht ok.');
+                        // Wirf einen Fehler mit dem Status und StatusText
+                        throw new Error('Fehler: ' + response.status + ' ' + response.statusText);
                     }
                     return response.json();
                 })
@@ -24,7 +25,8 @@
                     document.getElementById('objectDetails').textContent = JSON.stringify(data, null, 2);
                 })
                 .catch(error => {
-                    document.getElementById('objectDetails').textContent = error.toString();
+                    // Fange sowohl Netzwerkfehler als auch HTTP-Fehler.
+                    document.getElementById('objectDetails').textContent = error.message;
                 });
         }
     </script>
